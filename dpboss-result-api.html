@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from dpboss.boston/dpboss-result-api.php by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 01 Apr 2026 14:24:29 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DPBOSS API - The Fastest Satta Matka Result API in the World. Real-time updates, 100% trusted, 24/7 support. Choose Normal or Premium plans to integrate Satta Matka results into your website seamlessly.">
+    <meta name="keywords" content="DPBOSS API, Satta Matka API, Satta Matka Result, Fastest Matka API, Real-time Matka Result, Trusted Matka API">
+    <meta name="author" content="DPBOSS">
+    <title>DPBOSS API - World's Fastest Satta Matka Result API</title>
+    <link rel="stylesheet" href="../cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        body {
+            background-color: #FFF5E6;
+            color: #333;
+            line-height: 1.8;
+        }
+        header {
+            background: linear-gradient(to bottom, #B22222, #8B0000);
+            color: #FFF;
+            text-align: center;
+            padding: 3rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        section {
+            padding: 3rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h2 {
+            color: #B22222;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+        h2::after {
+            content: '';
+            width: 50px;
+            height: 3px;
+            background-color: #FF1493;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        p {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .intro-text {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .feature-card {
+  text-align: center;
+}
+        .feature-card {
+            background-color: #FFF;
+            border: 2px solid #FF1493;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-card i {
+            font-size: 2.5rem;
+            color: #B22222;
+            margin-bottom: 1rem;
+        }
+        .feature-card h3 {
+            color: #0000FF;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        .pricing {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        .pricing-card {
+            background-color: #FFF;
+            border: 3px solid #B22222;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        .pricing-card h3 {
+            color: #0000FF;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .pricing-card .label {
+            position: absolute;
+            top: 20px;
+            right: -60px;
+            background-color: #FF1493;
+            color: #FFF;
+            padding: 0.5rem 4rem;
+            transform: rotate(45deg);
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .pricing-card ul {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        .pricing-card ul li {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
+        .pricing-card ul li i {
+            color: #B22222;
+            margin-right: 0.5rem;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #FF1493;
+            color: #FFF;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 1rem 0;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #B22222;
+        }
+        .contact p {
+            font-size: 1.1rem;
+        }
+        .contact a {
+            color: #0000FF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .contact a:hover {
+            text-decoration: underline;
+        }
+        .contact i {
+            color: #B22222;
+            margin-right: 0.5rem;
+        }
+        footer {
+            background-color: #B22222;
+            color: #FFF;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+        }
+        @media (min-width: 768px) {
+            .features, .pricing {
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .feature-card, .pricing-card {
+                width: 45%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DPBOSS - SATTA MATKA RESULT API</h1>
+        <p>The Ultimate Solution for Real-Time Satta Matka Results</p>
+    </header>
+
+    <section id="intro">
+    <h2>🚀 Show Fast Satta Matka Results on Your Website with DPBOSS API</h2>
+        <div class="intro-text">
+            <p>DPBOSS, the undisputed leader in Satta Matka results, proudly presents our cutting-edge API service. As the No. 1 trusted platform in the industry, we’ve been delivering the fastest and most reliable Satta Matka results to millions of users across India and beyond.</p>
+            <p>Now, with the DPBOSS API, you can seamlessly integrate our lightning-fast results into your own website. Whether you run a Matka portal, a gaming platform, or a results aggregator, our API ensures your users get the most accurate and up-to-date information directly from the source—10X faster than any other provider in the market.</p>
+            <a href="#pricing" class="btn">Explore Plans Now</a>
+            <a href="dpboss-result-api-documentation.html" class="btn" style="background-color:#0000FF;">View API Documentation</a>
+        </div>
+    </section>
+
+    <section id="features">
+        <h2>Why DPBOSS API Stands Out</h2>
+        <div class="features">
+            <div class="feature-card">
+                <i class="fas fa-rocket"></i>
+                <h3>Unmatched Speed</h3>
+                <p>Experience results 10X faster than competitors. We are the original source, eliminating middleman delays and ensuring your users get updates in record time.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>100% Trusted Legacy</h3>
+                <p>DPBOSS has been the market leader for years, trusted by millions. Our API carries the same reliability and credibility that our users have come to depend on.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-headset"></i>
+                <h3>24/7 Support & Uptime</h3>
+                <p>Our API is designed for 100% uptime, and our dedicated support team is available round-the-clock to assist with integration, troubleshooting, or any queries.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-tachometer-alt"></i>
+                <h3>Real-Time Options</h3>
+                <p>Choose between Normal (1 Minut delay) or Premium (real-time) plans to suit your needs. We cater to all types of websites with flexible and scalable solutions.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing">
+    <h2>Flexible Pricing Plans for Every Need</h2>
+        <p>Select the plan that best fits your requirements and start delivering the fastest Satta Matka results to your users today.</p>
+    <div class="pricing">
+        <div class="pricing-card">
+            <h3>Normal Plan</h3>
+            <div class="label">1 Minut Delay</div>
+            <p>Perfect for websites that need reliable updates with a minimal delay. Ideal for smaller platforms or aggregators.</p>
+            <ul>
+                    <li><i class="fas fa-check"></i>1 Month: ₹8,999</li>
+                    <li><i class="fas fa-check"></i>3 Months: ₹20,999</li>
+                    <li><i class="fas fa-check"></i>12 Months: Contact admin</li>
+                </ul>
+        </div>
+        <div class="pricing-card">
+            <h3>Premium Plan</h3>
+            <div class="label">Real-Time</div>
+            <p>Designed for high-traffic websites needing instant updates. Get real-time results as soon as they’re available.</p>
+            <ul>
+                    <li><i class="fas fa-check"></i>1 Month: ₹9,999</li>
+                    <li><i class="fas fa-check"></i>3 Months: ₹24,999</li>
+                    <li><i class="fas fa-check"></i>12 Months: Contact Admin</li>
+                </ul>
+        </div>
+    </div>
+    <a href="mailto:support@dpboss.net" class="btn">Get Started with DPBOSS API</a>
+</section>
+
+
+
+    <section id="contact" class="contact">
+        <h2>Ready to Integrate? Contact Us!</h2>
+        <p>We’re here to help you every step of the way. Reach out to us for more details or to begin your API integration journey.</p>
+        <p><i class="fas fa-envelope"></i>Email: <a href="mailto:support@dpboss.net">support@dpboss.net</a></p>
+
+    </section>
+    <footer>
+        <p>© 2025 DPBOSS. All Rights Reserved. | Trusted Leader in Satta Matka Results</p>
+        <p><a href="dpboss-result-api-documentation.html" style="color: #FFF; text-decoration: underline;">API Documentation</a></p>
+    </footer>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4d2985f5cd5b4a809a90d7d811b6f6f7","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e583fbfed0a7adf',t:'MTc3NTA1MzM3OA=='};var a=document.createElement('script');a.src='cdn-cgi/challenge-platform/h/g/scripts/jsd/ea2d291c0fdc/maind41d.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+<!-- Mirrored from dpboss.boston/dpboss-result-api.php by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 01 Apr 2026 14:24:29 GMT -->
+</html>

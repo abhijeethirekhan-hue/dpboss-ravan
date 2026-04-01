@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+
+    /* LOGIN */
+    #login-screen { background: #1a1a1a; padding: 40px; border-radius: 12px; width: 100%; max-width: 380px; text-align: center; }
+    #login-screen h2 { color: #aa00c0; margin-bottom: 24px; font-size: 22px; }
+    #login-screen input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-bottom: 16px; }
+    #login-screen button { width: 100%; padding: 12px; background: #aa00c0; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+    #login-error { color: #ff4444; margin-top: 12px; font-size: 14px; }
+
+    /* PANEL */
+    #admin-panel { display: none; width: 100%; max-width: 700px; padding: 24px; }
+    #admin-panel h1 { color: #aa00c0; margin-bottom: 24px; text-align: center; }
+
+    .card { background: #1a1a1a; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .card h3 { color: #aa00c0; margin-bottom: 16px; }
+
+    label { display: block; font-size: 13px; color: #aaa; margin-bottom: 6px; margin-top: 12px; }
+    input, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; }
+
+    .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; margin-top: 16px; width: 100%; }
+    .btn-primary { background: #aa00c0; color: #fff; }
+    .btn-success { background: #00c06a; color: #fff; }
+
+    .result-list { margin-top: 16px; }
+    .result-item { background: #111; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .result-item span { font-size: 15px; }
+    .result-item .name { color: #aa00c0; font-weight: bold; }
+    .result-item .number { color: #fff; }
+    .result-item button { background: #333; color: #fff; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
+    .result-item button:hover { background: #aa00c0; }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #00c06a; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 15px; display: none; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <h2>🔐 Admin Login</h2>
+  <input type="password" id="password-input" placeholder="Enter secret password" />
+  <button onclick="checkPassword()">Login</button>
+  <p id="login-error"></p>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <h1>⚙️ Admin Panel</h1>
+
+  <!-- ADD / EDIT RESULT -->
+  <div class="card">
+    <h3>➕ Add / Update Manual Result</h3>
+
+    <label>Bazaar Name</label>
+    <input type="text" id="bazaar-name" placeholder="e.g. KALYAN" />
+
+    <label>Result (e.g. 568-98-170)</label>
+    <input type="text" id="result-input" placeholder="XXX-XX-XXX" />
+
+    <label>Open Digit</label>
+    <input type="text" id="open-digit" placeholder="e.g. 5" />
+
+    <label>Jodi</label>
+    <input type="text" id="jodi-input" placeholder="e.g. 98" />
+
+    <label>Close Digit</label>
+    <input type="text" id="close-digit" placeholder="e.g. 1" />
+
+    <label>Date</label>
+    <input type="date" id="date-input" />
+
+    <button class="btn btn-primary" onclick="saveResult()">💾 Save Result</button>
+  </div>
+
+  <!-- EXISTING MANUAL RESULTS -->
+  <div class="card">
+    <h3>📋 Your Manual Results (Today)</h3>
+    <div class="result-list" id="result-list">
+      <p style="color:#666">Loading...</p>
+    </div>
+  </div>
+
+  <button class="btn" style="background:#333" onclick="logout()">🚪 Logout</button>
+</div>
+
+<div class="toast" id="toast">✅ Saved successfully!</div>
+
+<script>
+  // ─── CONFIG ───────────────────────────────────────────
+  const SECRET_PASSWORD = 'admin123'   // ← Change this!
+  const SUPABASE_URL = 'YOUR_SUPABASE_URL'   // ← Paste here
+  const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'   // ← Paste here
+  // ──────────────────────────────────────────────────────
+
+  const { createClient } = supabase
+  const db = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+  // Set today's date as default
+  document.getElementById('date-input').value = new Date().toISOString().split('T')[0]
+
+  // LOGIN
+  function checkPassword() {
+    const val = document.getElementById('password-input').value
+    if (val === SECRET_PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none'
+      document.getElementById('admin-panel').style.display = 'block'
+      loadResults()
+    } else {
+      document.getElementById('login-error').textContent = 'Wrong password!'
+    }
+  }
+
+  // Allow Enter key on password
+  document.getElementById('password-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPassword()
+  })
+
+  // SAVE RESULT
+  async function saveResult() {
+    const bazaar_name = document.getElementById('bazaar-name').value.trim().toUpperCase()
+    const result = document.getElementById('result-input').value.trim()
+    const open_digit = document.getElementById('open-digit').value.trim()
+    const jodi = document.getElementById('jodi-input').value.trim()
+    const close_digit = document.getElementById('close-digit').value.trim()
+    const date = document.getElementById('date-input').value
+
+    if (!bazaar_name || !result) return alert('Bazaar name and result are required!')
+
+    // Check if entry already exists for today
+    const { data: existing } = await db
+      .from('results')
+      .select('id')
+      .eq('date', date)
+      .eq('is_manual', true)
+      .ilike('bazaar_id', `%`)
+      .limit(1)
+
+    const payload = {
+      result,
+      open_digit,
+      jodi,
+      close_digit,
+      date,
+      is_manual: true
+    }
+
+    // Upsert by bazaar name match
+    const { error } = await db.from('results').upsert({
+      ...payload,
+      id: crypto.randomUUID()
+    })
+
+    if (error) {
+      alert('Error: ' + error.message)
+    } else {
+      showToast()
+      loadResults()
+      clearForm()
+    }
+  }
+
+  // LOAD MANUAL RESULTS
+  async function loadResults() {
+    const today = new Date().toISOString().split('T')[0]
+    const { data, error } = await db
+      .from('results')
+      .select('*')
+      .eq('is_manual', true)
+      .eq('date', today)
+      .order('created_at', { ascending: false })
+
+    const list = document.getElementById('result-list')
+
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '<p style="color:#666">No manual results for today.</p>'
+      return
+    }
+
+    list.innerHTML = data.map(r => `
+      <div class="result-item">
+        <span class="name">${r.bazaar_name || 'Unknown'}</span>
+        <span class="number">${r.result || '---'}</span>
+        <button onclick="deleteResult('${r.id}')">🗑 Delete</button>
+      </div>
+    `).join('')
+  }
+
+  // DELETE RESULT
+  async function deleteResult(id) {
+    if (!confirm('Delete this result?')) return
+    await db.from('results').delete().eq('id', id)
+    loadResults()
+  }
+
+  // CLEAR FORM
+  function clearForm() {
+    document.getElementById('bazaar-name').value = ''
+    document.getElementById('result-input').value = ''
+    document.getElementById('open-digit').value = ''
+    document.getElementById('jodi-input').value = ''
+    document.getElementById('close-digit').value = ''
+  }
+
+  // TOAST
+  function showToast() {
+    const t = document.getElementById('toast')
+    t.style.display = 'block'
+    setTimeout(() => t.style.display = 'none', 3000)
+  }
+
+  // LOGOUT
+  function logout() {
+    document.getElementById('admin-panel').style.display = 'none'
+    document.getElementById('login-screen').style.display = 'block'
+  }
+</script>
+</body>
+</html>
