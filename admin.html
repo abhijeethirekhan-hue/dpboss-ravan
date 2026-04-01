@@ -1,226 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; background: #0f0f0f; color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-
-    /* LOGIN */
-    #login-screen { background: #1a1a1a; padding: 40px; border-radius: 12px; width: 100%; max-width: 380px; text-align: center; }
-    #login-screen h2 { color: #aa00c0; margin-bottom: 24px; font-size: 22px; }
-    #login-screen input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-bottom: 16px; }
-    #login-screen button { width: 100%; padding: 12px; background: #aa00c0; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
-    #login-error { color: #ff4444; margin-top: 12px; font-size: 14px; }
-
-    /* PANEL */
-    #admin-panel { display: none; width: 100%; max-width: 700px; padding: 24px; }
-    #admin-panel h1 { color: #aa00c0; margin-bottom: 24px; text-align: center; }
-
-    .card { background: #1a1a1a; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-    .card h3 { color: #aa00c0; margin-bottom: 16px; }
-
-    label { display: block; font-size: 13px; color: #aaa; margin-bottom: 6px; margin-top: 12px; }
-    input, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; font-size: 15px; }
-
-    .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; margin-top: 16px; width: 100%; }
-    .btn-primary { background: #aa00c0; color: #fff; }
-    .btn-success { background: #00c06a; color: #fff; }
-
-    .result-list { margin-top: 16px; }
-    .result-item { background: #111; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-    .result-item span { font-size: 15px; }
-    .result-item .name { color: #aa00c0; font-weight: bold; }
-    .result-item .number { color: #fff; }
-    .result-item button { background: #333; color: #fff; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
-    .result-item button:hover { background: #aa00c0; }
-
-    .toast { position: fixed; bottom: 24px; right: 24px; background: #00c06a; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 15px; display: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Dpboss Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .login-form {
+            display: block;
+        }
+        .admin-form {
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #007bff;
+            color: white;
+        }
+        .delete-btn {
+            background: #dc3545;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin: 0;
+        }
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        .result-preview {
+            font-family: monospace;
+            font-size: 18px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-
-<!-- LOGIN -->
-<div id="login-screen">
-  <h2>🔐 Admin Login</h2>
-  <input type="password" id="password-input" placeholder="Enter secret password" />
-  <button onclick="checkPassword()">Login</button>
-  <p id="login-error"></p>
-</div>
-
-<!-- ADMIN PANEL -->
-<div id="admin-panel">
-  <h1>⚙️ Admin Panel</h1>
-
-  <!-- ADD / EDIT RESULT -->
-  <div class="card">
-    <h3>➕ Add / Update Manual Result</h3>
-
-    <label>Bazaar Name</label>
-    <input type="text" id="bazaar-name" placeholder="e.g. KALYAN" />
-
-    <label>Result (e.g. 568-98-170)</label>
-    <input type="text" id="result-input" placeholder="XXX-XX-XXX" />
-
-    <label>Open Digit</label>
-    <input type="text" id="open-digit" placeholder="e.g. 5" />
-
-    <label>Jodi</label>
-    <input type="text" id="jodi-input" placeholder="e.g. 98" />
-
-    <label>Close Digit</label>
-    <input type="text" id="close-digit" placeholder="e.g. 1" />
-
-    <label>Date</label>
-    <input type="date" id="date-input" />
-
-    <button class="btn btn-primary" onclick="saveResult()">💾 Save Result</button>
-  </div>
-
-  <!-- EXISTING MANUAL RESULTS -->
-  <div class="card">
-    <h3>📋 Your Manual Results (Today)</h3>
-    <div class="result-list" id="result-list">
-      <p style="color:#666">Loading...</p>
+    <div class="container">
+        <h1>🎮 Admin Panel - Game Results</h1>
+        
+        <div id="login" class="login-form">
+            <h2>🔐 Login</h2>
+            <input type="password" id="password" placeholder="Enter password">
+            <button onclick="login()">Login</button>
+        </div>
+        
+        <div id="admin" class="admin-form">
+            <h2>➕ Add / Update Manual Result</h2>
+            
+            <form id="resultForm">
+                <input type="text" id="bazaarName" placeholder="Bazaar Name (e.g., SOMALWADA)" required>
+                <input type="text" id="openDigit" placeholder="Open Digit (e.g., 111)" required>
+                <input type="text" id="jodi" placeholder="Jodi (e.g., 22)" required>
+                <input type="text" id="closeDigit" placeholder="Close Digit (e.g., 333)" required>
+                <div class="result-preview" id="preview">
+                    Preview: 111-22-333
+                </div>
+                <button type="submit">💾 Save to Database</button>
+            </form>
+            
+            <div id="message" class="message"></div>
+            
+            <h3>📋 Your Manual Games</h3>
+            <div id="entriesList">
+                Loading...
+            </div>
+        </div>
     </div>
-  </div>
 
-  <button class="btn" style="background:#333" onclick="logout()">🚪 Logout</button>
-</div>
-
-<div class="toast" id="toast">✅ Saved successfully!</div>
-
-<script>
-  // ─── CONFIG ───────────────────────────────────────────
-  const SECRET_PASSWORD = 'admin123'   // ← Change this!
-  const SUPABASE_URL = 'YOUR_SUPABASE_URL'   // ← Paste here
-  const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'   // ← Paste here
-  // ──────────────────────────────────────────────────────
-
-  const { createClient } = supabase
-  const db = createClient(SUPABASE_URL, SUPABASE_KEY)
-
-  // Set today's date as default
-  document.getElementById('date-input').value = new Date().toISOString().split('T')[0]
-
-  // LOGIN
-  function checkPassword() {
-    const val = document.getElementById('password-input').value
-    if (val === SECRET_PASSWORD) {
-      document.getElementById('login-screen').style.display = 'none'
-      document.getElementById('admin-panel').style.display = 'block'
-      loadResults()
-    } else {
-      document.getElementById('login-error').textContent = 'Wrong password!'
-    }
-  }
-
-  // Allow Enter key on password
-  document.getElementById('password-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkPassword()
-  })
-
-  // SAVE RESULT
-  async function saveResult() {
-    const bazaar_name = document.getElementById('bazaar-name').value.trim().toUpperCase()
-    const result = document.getElementById('result-input').value.trim()
-    const open_digit = document.getElementById('open-digit').value.trim()
-    const jodi = document.getElementById('jodi-input').value.trim()
-    const close_digit = document.getElementById('close-digit').value.trim()
-    const date = document.getElementById('date-input').value
-
-    if (!bazaar_name || !result) return alert('Bazaar name and result are required!')
-
-    // Check if entry already exists for today
-    const { data: existing } = await db
-      .from('results')
-      .select('id')
-      .eq('date', date)
-      .eq('is_manual', true)
-      .ilike('bazaar_id', `%`)
-      .limit(1)
-
-    const payload = {
-      result,
-      open_digit,
-      jodi,
-      close_digit,
-      date,
-      is_manual: true
-    }
-
-    // Upsert by bazaar name match
-    const { error } = await db.from('results').upsert({
-      ...payload,
-      id: crypto.randomUUID()
-    })
-
-    if (error) {
-      alert('Error: ' + error.message)
-    } else {
-      showToast()
-      loadResults()
-      clearForm()
-    }
-  }
-
-  // LOAD MANUAL RESULTS
-  async function loadResults() {
-    const today = new Date().toISOString().split('T')[0]
-    const { data, error } = await db
-      .from('results')
-      .select('*')
-      .eq('is_manual', true)
-      .eq('date', today)
-      .order('created_at', { ascending: false })
-
-    const list = document.getElementById('result-list')
-
-    if (error || !data || data.length === 0) {
-      list.innerHTML = '<p style="color:#666">No manual results for today.</p>'
-      return
-    }
-
-    list.innerHTML = data.map(r => `
-      <div class="result-item">
-        <span class="name">${r.bazaar_name || 'Unknown'}</span>
-        <span class="number">${r.result || '---'}</span>
-        <button onclick="deleteResult('${r.id}')">🗑 Delete</button>
-      </div>
-    `).join('')
-  }
-
-  // DELETE RESULT
-  async function deleteResult(id) {
-    if (!confirm('Delete this result?')) return
-    await db.from('results').delete().eq('id', id)
-    loadResults()
-  }
-
-  // CLEAR FORM
-  function clearForm() {
-    document.getElementById('bazaar-name').value = ''
-    document.getElementById('result-input').value = ''
-    document.getElementById('open-digit').value = ''
-    document.getElementById('jodi-input').value = ''
-    document.getElementById('close-digit').value = ''
-  }
-
-  // TOAST
-  function showToast() {
-    const t = document.getElementById('toast')
-    t.style.display = 'block'
-    setTimeout(() => t.style.display = 'none', 3000)
-  }
-
-  // LOGOUT
-  function logout() {
-    document.getElementById('admin-panel').style.display = 'none'
-    document.getElementById('login-screen').style.display = 'block'
-  }
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://rmcmrrsiklyarajrofsb.supabase.co'
+        const SUPABASE_KEY = 'sb_publishable_uQ98o9xvX15-g-BY9ohj1g_oSog7TRh'
+        const SECRET_PASSWORD = 'admin123'
+        
+        let supabaseClient
+        let isLoggedIn = false
+        
+        // Preview the result as user types
+        function updatePreview() {
+            const open = document.getElementById('openDigit').value || '111'
+            const jodi = document.getElementById('jodi').value || '22'
+            const close = document.getElementById('closeDigit').value || '333'
+            document.getElementById('preview').innerHTML = `Preview: ${open}-${jodi}-${close}`
+        }
+        
+        document.getElementById('openDigit').addEventListener('input', updatePreview)
+        document.getElementById('jodi').addEventListener('input', updatePreview)
+        document.getElementById('closeDigit').addEventListener('input', updatePreview)
+        
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message')
+            msgDiv.textContent = text
+            msgDiv.className = `message ${type}`
+            msgDiv.style.display = 'block'
+            setTimeout(() => {
+                msgDiv.style.display = 'none'
+            }, 3000)
+        }
+        
+        async function login() {
+            const password = document.getElementById('password').value
+            if (password === SECRET_PASSWORD) {
+                isLoggedIn = true
+                document.getElementById('login').style.display = 'none'
+                document.getElementById('admin').style.display = 'block'
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+                await loadManualEntries()
+                showMessage('✅ Logged in successfully!', 'success')
+            } else {
+                showMessage('❌ Wrong password!', 'error')
+            }
+        }
+        
+        async function loadManualEntries() {
+            if (!supabaseClient) return
+            
+            const { data, error } = await supabaseClient
+                .from('results')
+                .select('*')
+                .eq('is_manual', true)
+                .order('created_at', { ascending: false })
+            
+            if (error) {
+                console.error('Error loading entries:', error)
+                document.getElementById('entriesList').innerHTML = '<p>❌ Error loading entries</p>'
+                return
+            }
+            
+            if (!data || data.length === 0) {
+                document.getElementById('entriesList').innerHTML = '<p>No manual entries yet. Add one above!</p>'
+                return
+            }
+            
+            let html = '<table><th>Bazaar</th><th>Result</th><th>Date</th><th>Action</th></tr>'
+            data.forEach(entry => {
+                const result = `${entry.open_digit || '?'}-${entry.jodi || '?'}-${entry.close_digit || '?'}`
+                html += `
+                    <tr>
+                        <td><strong>${entry.bazaar_name}</strong></td>
+                        <td><code>${result}</code></td>
+                        <td>${entry.date}</td>
+                        <td><button class="delete-btn" onclick="deleteEntry('${entry.id}')">Delete</button></td>
+                    </tr>
+                `
+            })
+            html += '</table>'
+            document.getElementById('entriesList').innerHTML = html
+        }
+        
+        async function deleteEntry(id) {
+            if (!confirm('Delete this entry?')) return
+            
+            const { error } = await supabaseClient
+                .from('results')
+                .delete()
+                .eq('id', id)
+            
+            if (error) {
+                showMessage('Error deleting: ' + error.message, 'error')
+            } else {
+                showMessage('✅ Deleted successfully!', 'success')
+                await loadManualEntries()
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('resultForm').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const bazaarName = document.getElementById('bazaarName').value.trim()
+            const openDigit = document.getElementById('openDigit').value.trim()
+            const jodi = document.getElementById('jodi').value.trim()
+            const closeDigit = document.getElementById('closeDigit').value.trim()
+            const today = new Date().toISOString().split('T')[0]
+            
+            if (!bazaarName || !openDigit || !jodi || !closeDigit) {
+                showMessage('❌ Please fill all fields', 'error')
+                return
+            }
+            
+            showMessage('💾 Saving...', 'success')
+            
+            const resultData = {
+                bazaar_name: bazaarName,
+                date: today,
+                open_digit: openDigit,
+                jodi: jodi,
+                close_digit: closeDigit,
+                is_manual: true
+            }
+            
+            // Use upsert to update if exists, insert if not
+            const { error } = await supabaseClient
+                .from('results')
+                .upsert(resultData, {
+                    onConflict: 'bazaar_name,date'
+                })
+            
+            if (error) {
+                showMessage('❌ Error: ' + error.message, 'error')
+                console.error('Supabase error:', error)
+            } else {
+                showMessage(`✅ Saved! ${bazaarName}: ${openDigit}-${jodi}-${closeDigit}`, 'success')
+                document.getElementById('resultForm').reset()
+                document.getElementById('openDigit').value = ''
+                document.getElementById('jodi').value = ''
+                document.getElementById('closeDigit').value = ''
+                document.getElementById('preview').innerHTML = 'Preview: ---'
+                await loadManualEntries()
+            }
+        })
+        
+        // Initialize preview
+        updatePreview()
+    </script>
 </body>
 </html>
